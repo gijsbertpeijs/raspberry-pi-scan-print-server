@@ -17,6 +17,9 @@ import os
 import time
 import datetime
 
+# Get base dir
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Set the mode of numbering the pins. 
 GPIO.setmode(GPIO.BOARD)
 
@@ -47,7 +50,7 @@ while 1:
     if GPIO.input(8):
         GPIO.output(10,True)
         ts = time.time()
-        file_name = "scan_" + datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%y_%H-%M-%S')
+        file_name = current_dir + "/scan_" + datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%y_%H-%M-%S')
         print file_name
         GPIO.output(11,False)
         os.system("scanimage --format=tiff --mode=Color --resolution=300 -p > " + file_name + ".tiff")
@@ -56,12 +59,12 @@ while 1:
         os.system("convert " + file_name + ".tiff "+ file_name + ".jpg")
         GPIO.output(12,True)
         GPIO.output(13,False)
-        os.system("./dropbox_uploader.sh upload " + file_name + ".jpg")
+        os.system(current_dir + "/dropbox_uploader.sh upload " + file_name + ".jpg")
         GPIO.output(13,True)
         
         #clean up
         os.system("rm " + file_name + ".tiff");
-        os.system("mv " + file_name + ".jpg finished_scans/");
+        os.system("mv " + file_name + ".jpg " + current_dir + "/finished_scans/");
         
         for x in range(0, 3):       # Flash 3 times for succes
             GPIO.output(15,False)
